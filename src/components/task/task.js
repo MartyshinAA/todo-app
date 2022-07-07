@@ -1,27 +1,42 @@
 import { Component } from 'react';
+import PropTypes from 'prop-types'; 
 import './task.css';
 
 export default class Task extends Component {
+
+  static defaultProps = {
+    description: 'New Task',
+    completed: false,
+    editing: false,
+    created: 'created some time ago',
+  }
+  
+  static propsTypes = {
+    description: PropTypes.string,
+    completed: PropTypes.boolean,
+    editing: PropTypes.boolean,
+    created: PropTypes.string,
+    onDescriptionCompleted: PropTypes.func.isRequired,
+    onDescriptionEditing: PropTypes.func.isRequired,
+    deleteTodoElement: PropTypes.func.isRequired,
+  }
 
   state = {
     description: this.props.description
   }
   
-  onSubmitEditing = event => {
-    event.preventDefault();
+  onSubmitEditing = e => {
+    e.preventDefault();
     this.props.onDescriptionEditing(this.state.description); 
   }
 
-  descriptionEdit = event => {
-    // console.log(this.state.description);
-    this.setState({
-      description: event.target.value
-    });
-    // this.props.editTodoElement(event.target.value)
+  editTodoElement = e => {
+    this.props.editTodoElement(e)
   }
 
   render() {
-    const { completed, editing, created, onDescriptionCompleted, onDescriptionEditing, deleteTask } = this.props;
+    const { description, completed, editing, created, onDescriptionCompleted, onDescriptionEditing, deleteTodoElement } = this.props;
+
     let classNames = 'task';
     if (completed) {
       classNames +=` completed`;
@@ -36,25 +51,27 @@ export default class Task extends Component {
               <input 
                 className="toggle" 
                 type="checkbox" 
-                onClick = { onDescriptionCompleted }
+                checked= { completed }
+                onChange = { onDescriptionCompleted }
                 />
               <label>
                 <span 
                 className = "description"
-                >{ this.state.description } {/* Понимаю, так не меняем состояние основного связывающего компонента App (видимо это что-то про хуки), да и в задании не было про реализацию редактирования). Сделал для красоты */}
+                >{ description }
                 </span>
                 <span className="created">{ created }</span>
               </label>
               <button className="icon icon-edit"
                       onClick = { onDescriptionEditing }></button>
               <button className="icon icon-destroy"
-              onClick={ deleteTask }></button>
+              onClick={ deleteTodoElement }></button>
             </div>
             {editing && <form onSubmit = { this.onSubmitEditing }>
                           <input type="text" 
                                   className="edit" 
-                                  onChange = { this.descriptionEdit }
-                                  value={ this.state.description }
+                                  // В задании не было реализовать функцию редактирования, но для учебного проекта пусть будет. Впредь подобного обязуюсь не совершать.
+                                  onChange = { this.editTodoElement }
+                                  value={ description }
                                   ></input>
                         </form>} 
           </li>

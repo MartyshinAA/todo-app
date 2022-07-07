@@ -1,38 +1,36 @@
 import { Component } from 'react';
-import './new-task-form.css'
+import './new-task-form.css';
 
 export default class NewTaskForm extends Component {
-
   state = {
-    description: ''
-  }
-  
-  onSubmit = event => {
+    description: '',
+  };
+
+  onSubmit = (event) => {
     event.preventDefault();
-    this.props.addNewTask(this.state.description)
+    this.props.addNewTask(this.state.description);
     this.setState({
-      description: ''
+      description: '',
     });
-  }
+  };
 
-  onDescriptionChange = event => {
+  onDescriptionChange = (event) => {
     this.setState({
-      description: event.target.value
+      description: event.target.value,
     });
-  }
+  };
 
-  render () {
+  render() {
     return (
-      <form className='new-task-form'
-            onSubmit={ this.onSubmit }>
-        <input 
-        className="new-todo" 
-        type='text' 
-        placeholder="What needs to be done?"
-        onChange = { this.onDescriptionChange }
-        value= { this.state.description }
+      <form className="new-task-form" onSubmit={this.onSubmit}>
+        <input
+          className="new-todo"
+          type="text"
+          placeholder="What needs to be done?"
+          onChange={this.onDescriptionChange}
+          value={this.state.description}
         ></input>
       </form>
-    )
+    );
   }
 }

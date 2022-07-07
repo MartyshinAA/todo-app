@@ -1,4 +1,5 @@
 import { Component } from "react";
+import PropTypes from "prop-types";
 import NewTaskForm from "../new-task-form";
 import TaskList from "../task-list";
 import Footer from "../footer";
@@ -11,16 +12,26 @@ export default class App extends Component {
   
   id = 0;
 
+  static defaultProps = {
+    timeout: 10000,
+  }
+
+  static propTypes = {
+    timeout: PropTypes.number,
+  }
+
+
   state = {
     todoData : [
       this.createTodoElement('Completed task'),
       this.createTodoElement('Editing task'),
       this.createTodoElement('Active task'),
     ],
-    filter: 'active',
+    filter: 'all',
   }
   
   createTodoElement (description) {
+    // let { id } = this.props;
     return {
       description,
       completed: false,
@@ -32,9 +43,10 @@ export default class App extends Component {
   }
 
   componentDidMount() {
+    const { timeout } = this.props;
     this.timerID = setInterval(
       () => this.renewCreationDate(),
-      10000
+      timeout
     );
   }
 
@@ -63,19 +75,19 @@ export default class App extends Component {
     });
   }
 
-  // editTodoElement = (description, id) => {
-  //   this.setState(({ todoData }) => {
-  //     const newArray = todoData.map((task) => {
-  //       if (task.id === id) {
-  //         task.description = description 
-  //       }
-  //               return task;
-  //     })
-  //     return {
-  //       todoData: newArray
-  //     }
-  //   });
-  // }
+  editTodoElement = (e, id) => {
+    this.setState(({ todoData }) => {
+      const newArray = todoData.map((task) => {
+        if (task.id === id) {
+          task.description = e.target.value 
+        }
+                return task;
+      })
+      return {
+        todoData: newArray
+      }
+    });
+  }
 
   deleteTodoElement = id => {
     this.setState(({ todoData }) => {
@@ -85,37 +97,34 @@ export default class App extends Component {
       }
     });
   }
-
+  
   onDescriptionCompleted = id => {
     this.setState(({ todoData }) => {
-      const newArray = todoData.map((task) => {
-        if (task.id === id) {
-          task.completed = !task.completed;
-        }
-        return task;
-      })
       return {
-        todoData: newArray
+        todoData: this.toggleProperties(todoData, id, 'completed')
       }
     });
   }
 
   onDescriptionEditing = id => {
     this.setState(({ todoData }) => {
-      const newArray = todoData.map((task) => {
-        if (task.id === id) {
-          task.editing = !task.editing;
-        }
-        return task;
-      })
       return {
-        todoData: newArray
+        todoData: this.toggleProperties(todoData, id, 'editing')
       }
     });
   }
 
+  toggleProperties (arr, id, propName) {
+    const newArray = arr.map((task) => {
+      if (task.id === id) {
+        task[propName] = !task[propName];
+      }
+      return task;
+    })
+    return newArray;
+  }
+
   addNewTask = text => {
-    // console.log(text);
     this.setState(({ todoData }) => {
       const newArray = [...todoData, this.createTodoElement (text)]
       return {
@@ -124,35 +133,15 @@ export default class App extends Component {
     })
   }
 
-  taskFilterAll = () => {
+  taskFilterButton = e => {
     this.setState(({ filter }) => {
-      // console.log('All')
       return {
-        filter: 'all'
-      }
-    })
-  }
-
-  taskFilterActive = () => {
-    this.setState(({ filter }) => {
-      // console.log('Active')
-      return {
-        filter: 'active'
-      }
-    })
-  }
-
-  taskFilterCompleted = () => {
-    this.setState(({ filter }) => {
-      // console.log('Completed')
-      return {
-        filter: 'completed'
+        filter: e.target.textContent.toLowerCase()
       }
     })
   }
 
   taskFilter (tasks, filter) {
-    // console.log(tasks, filter);
     switch(filter) {
       case 'all': return tasks;
       case 'active': return tasks.filter((task) => !task.completed);
@@ -160,32 +149,37 @@ export default class App extends Component {
       default: return tasks;
     }
   }
-  
+
   render () {
     const { todoData, filter } = this.state;
-    const activeTasks = this.state.todoData.filter((task) => !task.completed).length;
+    const activeTasks = todoData.filter((task) => !task.completed).length;
     const filteredTasks = this.taskFilter(todoData, filter);
 
-    return (<>
-    <header className="header">
-        <h1>todos</h1>
-        <NewTaskForm addNewTask = { this.addNewTask }/>
-      </header>
-      <div className="todo-app">
-        <TaskList todos = { filteredTasks }
-                  deleteTask = { this.deleteTodoElement} 
-                  onDescriptionCompleted = { this.onDescriptionCompleted } 
-                  onDescriptionEditing = { this.onDescriptionEditing } 
+    return (
+      <>
+      <section className="todoapp">
+        <header className="header">
+          <h1>todos</h1>
+          <NewTaskForm addNewTask = { this.addNewTask }/>
+        </header>
+        <section className="main">
+          <div className="todo-app">
+            <TaskList todos = { filteredTasks }
+                      deleteTodoElement = { this.deleteTodoElement}
+                      editTodoElement = { this.editTodoElement } 
+                      onDescriptionCompleted = { this.onDescriptionCompleted } 
+                      onDescriptionEditing = { this.onDescriptionEditing }
+                      />
+          </div>
+          <Footer clearCompleted = { this.clearCompleted }
+                  activeTasks = { activeTasks }
+                  taskFilterButton = { this.taskFilterButton }
+                  filterStatus = { filter }
+                  buttonUp = { this.buttonUp }
                   />
-      </div>
-      <Footer clearCompleted = { this.clearCompleted }
-              activeTasks = { activeTasks }
-              taskFilterAll = { this.taskFilterAll }
-              taskFilterActive = { this.taskFilterActive }
-              taskFilterCompleted = { this.taskFilterCompleted }
-              filterStatus = { filter }
-              />
-      </>
+        </section>
+      </section>
+    </>
     );
   }
 };
