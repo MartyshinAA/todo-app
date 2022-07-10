@@ -29,7 +29,7 @@ export default class NewTaskForm extends Component {
           placeholder="What needs to be done?"
           onChange={this.onDescriptionChange}
           value={this.state.description}
-        ></input>
+        />
       </form>
     );
   }

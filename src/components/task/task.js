@@ -46,33 +46,22 @@ export default class Task extends Component {
 
     let classNames = 'task';
     if (completed) {
-      classNames += ` completed`;
+      classNames += ' completed';
     }
     if (editing) {
-      classNames += ` editing`;
+      classNames += ' editing';
     }
 
     return (
       <li className={classNames}>
         <div className="view">
-          <input
-            className="toggle"
-            type="checkbox"
-            checked={completed}
-            onChange={onDescriptionCompleted}
-          />
+          <input className="toggle" type="checkbox" checked={completed} onChange={onDescriptionCompleted} />
           <label>
             <span className="description">{description}</span>
             <span className="created">{created}</span>
           </label>
-          <button
-            className="icon icon-edit"
-            onClick={onDescriptionEditing}
-          ></button>
-          <button
-            className="icon icon-destroy"
-            onClick={deleteTodoElement}
-          ></button>
+          <button className="icon icon-edit" onClick={onDescriptionEditing} />
+          <button className="icon icon-destroy" onClick={deleteTodoElement} />
         </div>
         {editing && (
           <form onSubmit={this.onSubmitEditing}>
@@ -82,7 +71,7 @@ export default class Task extends Component {
               // В задании не было реализовать функцию редактирования, но для учебного проекта пусть будет. Впредь подобного обязуюсь не совершать.
               onChange={this.editTodoElement}
               value={description}
-            ></input>
+            />
           </form>
         )}
       </li>
