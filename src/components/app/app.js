@@ -19,17 +19,14 @@ export default class App extends Component {
 
   id = 0;
 
-  constructor(state) {
-    super(state);
-    state = {
-      todoData: [
-        this.createTodoElement('Completed task'),
-        this.createTodoElement('Editing task'),
-        this.createTodoElement('Active task'),
-      ],
-      filter: 'all',
-    };
-  }
+  state = {
+    todoData: [
+      this.createTodoElement('Completed task'),
+      this.createTodoElement('Editing task'),
+      this.createTodoElement('Active task'),
+    ],
+    filter: 'all',
+  };
 
   componentDidMount() {
     const { timeout } = this.props;
@@ -127,7 +124,7 @@ export default class App extends Component {
       completed: false,
       editing: false,
       creationTime: Date.now(),
-      created: 'have now been created',
+      created: `created ${formatDistanceToNow(Date.now(), { includeSeconds: true })} ago`,
       id: this.id++,
     };
   }
